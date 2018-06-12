@@ -1,4 +1,6 @@
 import pandas as pd
+from config import *
+import datetime
 
 #基于user_id、item_id、category三大基本维度进行特征构建，
 # 这里将所需构建的特征分为六大类：U、I、C、UI、UC、IC
@@ -9,8 +11,8 @@ userAll = pd.read_csv('./way3Data/user_item_datetime_type.csv', encoding='utf-8'
 # print(userAll.head())
 
 #step2:构建U类特征
-# ①u_b_count_in_n(n=1/3/6; 用户在考察日前n天的行为总量计数，考察日取2014-12-17)
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+# ①u_b_count_in_n(n=1/3/6; 用户在考察日前n天的行为总量计数)
+userSub = userAll[userAll['time_day'] == day_1]
 userSub = userSub[['user_id', 'item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['user_id', 'item_id', 'item_category'], as_index=False).sum()
 userSub['u_b_count_in_1'] = userSub['type_1']+userSub['type_2']+userSub['type_3']+userSub['type_4']
@@ -23,7 +25,7 @@ u_b_count_in_1 = userSub.copy()
 # usertmp = userSub[['user_id', 'item_id', 'item_category']]
 # print(usertmp.duplicated().sum())# 重复行为0
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['user_id', 'item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['user_id', 'item_id', 'item_category'], as_index=False).sum()
 userSub['u_b_count_in_3'] = userSub['type_1']+userSub['type_2']+userSub['type_3']+userSub['type_4']
@@ -32,7 +34,7 @@ u_b_count_in_3 = userSub.copy()
 # print(u_b_count_in_3.info())
 # print(u_b_count_in_3.head())
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['user_id', 'item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['user_id', 'item_id', 'item_category'], as_index=False).sum()
 userSub['u_b_count_in_6'] = userSub['type_1']+userSub['type_2']+userSub['type_3']+userSub['type_4']
@@ -47,8 +49,8 @@ u_b_count_in_n = pd.merge(u_b_count_in_n, u_b_count_in_1, on=['user_id', 'item_i
 # print(u_b_count_in_n.head())
 u_b_count_in_n.to_csv('./way3Data/u_b_count_in_n.csv', index=False, encoding='utf-8')
 
-#②u_bi_count_in_n(n=1/3/6;i=1/2/3/4; 用户在考察日前n天的各类行为总量计数，考察日取2014-12-17)
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+#②u_bi_count_in_n(n=1/3/6;i=1/2/3/4; 用户在考察日前n天的各类行为总量计数)
+userSub = userAll[userAll['time_day'] == day_1]
 userSub = userSub[['user_id', 'item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['user_id', 'item_id', 'item_category'], as_index=False).sum()
 userSub['u_b1_count_in_1'] = userSub['type_1']   #用户在考察日前1天的浏览（1）行为总量计数
@@ -63,7 +65,7 @@ u_bi_count_in_1 = userSub.copy()
 # print(u_bi_count_in_1.info())
 # print(u_bi_count_in_1.u_b1_count_in_3.max())
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['user_id', 'item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['user_id', 'item_id', 'item_category'], as_index=False).sum()
 userSub['u_b1_count_in_3'] = userSub['type_1']   #用户在考察日前3天的浏览（1）行为总量计数
@@ -78,7 +80,7 @@ u_bi_count_in_3 = userSub.copy()
 # print(u_bi_count_in_3.info())
 # print(u_bi_count_in_3.u_b3_count_in_3.max())
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['user_id', 'item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['user_id', 'item_id', 'item_category'], as_index=False).sum()
 userSub['u_b1_count_in_6'] = userSub['type_1']   #用户在考察日前6天的浏览（1）行为总量计数
@@ -137,7 +139,7 @@ usertmp.dropna(axis=0, how='any', inplace=True)
 # print(usertmp[usertmp['type_1']!=1])
 # print(usertmp[usertmp['type_4']!=1])
 
-import datetime
+
 def to_time(string):
     string = str(string)
     return datetime.datetime.strptime(string, "%Y-%m-%d")
@@ -152,8 +154,8 @@ usertmp = usertmp[['item_id', 'item_category', 'u_b4_diff_hours']]
 usertmp.to_csv('./way3Data/u_b4_diff_hours.csv', index=False, encoding='utf-8')
 
 # step3:构建I类特征
-#①i_u_count_in_n (商品在考察日(2014-12-17)前n天的用户总数计数	反映了item_id的热度（用户覆盖性）)
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+#①i_u_count_in_n (商品在考察日前n天的用户总数计数	反映了item_id的热度（用户覆盖性）)
+userSub = userAll[userAll['time_day'] == day_1]
 userSub = userSub[['user_id', 'item_id', 'item_category']]
 # print(userSub.info())
 userSub = userSub.drop_duplicates()
@@ -169,7 +171,7 @@ userSub = userSub.drop_duplicates()
 # print(userSub.head())
 i_u_count_in_1 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['user_id', 'item_id', 'item_category']]
 userSub = userSub.drop_duplicates()
 userSub = userSub.drop('user_id', axis=1, inplace=False)
@@ -184,7 +186,7 @@ userSub = userSub.drop_duplicates()
 # print(userSub.head())
 i_u_count_in_3 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['user_id', 'item_id', 'item_category']]
 userSub = userSub.drop_duplicates()
 userSub = userSub.drop('user_id', axis=1, inplace=False)
@@ -208,7 +210,7 @@ i_u_count_in_n = pd.merge(i_u_count_in_n, i_u_count_in_1, on=['item_id', 'item_c
 i_u_count_in_n.to_csv('./way3Data/i_u_count_in_n.csv', index=False, encoding='utf-8')
 
 #②i_b_count_in_n（商品在考察日前n天的行为总数计数	反映了item_id的热度（用户停留性））
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+userSub = userAll[userAll['time_day'] == day_1]
 # print(userSub.info())
 # print(userSub.head())
 userSub = userSub[['item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
@@ -222,7 +224,7 @@ userSub = userSub.groupby(['item_id', 'item_category'], as_index=False).sum()
 # print(userSub.head())
 i_b_count_in_1 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub['i_b_count_in_3'] = userSub['type_1'] + userSub['type_2'] + userSub['type_3'] + userSub['type_4']
 userSub = userSub.drop(['type_1', 'type_2', 'type_3', 'type_4'], axis=1, inplace=False)
@@ -231,7 +233,7 @@ userSub = userSub.groupby(['item_id', 'item_category'], as_index=False).sum()
 # print(userSub.head())
 i_b_count_in_3 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub['i_b_count_in_6'] = userSub['type_1'] + userSub['type_2'] + userSub['type_3'] + userSub['type_4']
 userSub = userSub.drop(['type_1', 'type_2', 'type_3', 'type_4'], axis=1, inplace=False)
@@ -247,7 +249,7 @@ i_b_count_in_n = pd.merge(i_b_count_in_n, i_b_count_in_1, on=['item_id', 'item_c
 i_b_count_in_n.to_csv('./way3Data/i_b_count_in_n.csv', index=False, encoding='utf-8')
 
 #③i_bi_count_in_n(商品在考察日前n天的各项行为计数	反映了item_id的热度（用户操作吸引），折射出item_id产生的购买习惯特点)
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+userSub = userAll[userAll['time_day'] == day_1]
 # print(userSub.head())
 userSub = userSub[['item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 # print(userSub.head())
@@ -259,7 +261,7 @@ userSub.rename(columns={'type_1':'i_b1_count_in_1', 'type_2':'i_b2_count_in_1','
 # print(userSub.i_b4_count_in_1.max())
 i_bi_count_in_1 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['item_id', 'item_category'], as_index=False).sum()
 userSub.rename(columns={'type_1':'i_b1_count_in_3', 'type_2':'i_b2_count_in_3','type_3':'i_b3_count_in_3', 'type_4':'i_b4_count_in_3'}, inplace=True)
@@ -268,7 +270,7 @@ userSub.rename(columns={'type_1':'i_b1_count_in_3', 'type_2':'i_b2_count_in_3','
 # print(userSub.i_b4_count_in_3.max())
 i_bi_count_in_3 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub[['item_id', 'item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['item_id', 'item_category'], as_index=False).sum()
 userSub.rename(columns={'type_1':'i_b1_count_in_6', 'type_2':'i_b2_count_in_6','type_3':'i_b3_count_in_6', 'type_4':'i_b4_count_in_6'}, inplace=True)
@@ -326,7 +328,6 @@ usertmp.dropna(axis=0, how='any', inplace=True) #drop all rows that have any NaN
 # print(usertmp[usertmp['type_1'] != 1])
 # print(usertmp[usertmp['type_4'] != 1])
 
-import datetime
 def to_time(string):
     string = str(string)
     return datetime.datetime.strptime(string, "%Y-%m-%d")
@@ -342,7 +343,7 @@ usertmp.to_csv('./way3Data/i_b4_diff_hours.csv', index=False, encoding='utf-8')
 
 #step4:构建C(category)类特征
 #①c_u_count_in_n(类别在考察日前n天的用户总数计数	反映了item_category的热度（用户覆盖性）)
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+userSub = userAll[userAll['time_day'] == day_1]
 # print(userSub.info())
 userSub = userSub.drop_duplicates()   #去除重复的用户
 # print(userSub.info())
@@ -354,7 +355,7 @@ userSub = userSub.groupby(['item_category'], as_index=False).sum()
 # print(userSub.c_u_count_in_1.max())
 c_u_count_in_1 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub.drop_duplicates()
 userSub = userSub[['item_category']]
 userSub['c_u_count_in_3'] = 1
@@ -363,7 +364,7 @@ userSub = userSub.groupby(['item_category'], as_index=False).sum()
 # print(userSub.c_u_count_in_3.max())
 c_u_count_in_3 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub.drop_duplicates()
 userSub = userSub[['item_category']]
 userSub['c_u_count_in_6'] = 1
@@ -379,7 +380,7 @@ c_u_count_in_n = pd.merge(c_u_count_in_n, c_u_count_in_1, on=['item_category'], 
 c_u_count_in_n.to_csv('./way3Data/c_u_count_in_n.csv', index=False, encoding='utf-8')
 
 #②c_bi_count_in_n(类别在考察日前n天的各项行为计数	反映了item_category的热度（用户操作吸引），包含着item_category产生的购买习惯特点)
-userSub = userAll[userAll['time_day'] == '2014-12-16']
+userSub = userAll[userAll['time_day'] == day_1]
 userSub = userSub.drop_duplicates()
 userSub = userSub[['item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['item_category'], as_index=False).sum()
@@ -390,7 +391,7 @@ userSub.rename(columns={'type_1':'c_b1_count_in_1', 'type_2':'c_b2_count_in_1', 
 # print(userSub.head())
 c_bi_count_in_1 = userSub.copy()
 
-userSub = userAll[(userAll['time_day'] > '2014-12-13') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_3) & (userAll['time_day'] <= end_day)]
 userSub = userSub.drop_duplicates()
 userSub = userSub[['item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['item_category'], as_index=False).sum()
@@ -400,7 +401,7 @@ c_bi_count_in_3 = userSub.copy()
 # print(c_bi_count_in_3.info())
 # print(c_bi_count_in_3.head())
 
-userSub = userAll[(userAll['time_day'] > '2014-12-10') & (userAll['time_day'] < '2014-12-17')]
+userSub = userAll[(userAll['time_day'] >=day_6) & (userAll['time_day'] <= end_day)]
 userSub = userSub.drop_duplicates()
 userSub = userSub[['item_category', 'type_1', 'type_2', 'type_3', 'type_4']]
 userSub = userSub.groupby(['item_category'], as_index=False).sum()
